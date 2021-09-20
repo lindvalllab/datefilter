@@ -4,21 +4,29 @@ from tkinter import filedialog
 
 class UserInterface:
     def __init__(self):
-        # Set up interface
         self.root = tk.Tk()
         self.root.title("Date Filter")
+
+        # Important variables
+        self.data_file_var = tk.StringVar(value='No file selected')
+        self.filter_file_var = tk.StringVar(value='No file selected')
+
+        # Set up interface
         content = ttk.Frame(self.root)
         content.grid(column=0, row=0)
         frame = ttk.Frame(content, borderwidth=5, relief="ridge", width=600, height=200)
         frame.grid(column=0, row=0, columnspan=3, rowspan=4)
-        data_file_label = ttk.Label(content, text="Data file")
-        filter_file_label = ttk.Label(content, text="Filter file")
+
+        # data_file_var.
+
+        data_file_label = ttk.Label(content, textvariable=self.data_file_var)
+        filter_file_label = ttk.Label(content, textvariable=self.filter_file_var)
         data_file_button = ttk.Button(content,
                                       text="Select data file",
-                                      command=self.get_data_file_name)
+                                      command=self.open_file_name_to_var(self.data_file_var))
         filter_file_button = ttk.Button(content,
                                         text="Select filter file",
-                                        command=self.get_filter_file_name)
+                                        command=self.open_file_name_to_var(self.filter_file_var))
         confirm_button = ttk.Button(content,
                                     text="Filter",
                                     command=self.process_files)
@@ -31,25 +39,38 @@ class UserInterface:
 
         data_file_button.focus()
 
-        self.data_file_name = ''
-        self.filter_file_name = ''
-
     def run(self):
         self.root.mainloop()
 
+    @staticmethod
+    def open_file_name_to_var(var):
+        def get_file_name():
+            filename = filedialog.askopenfilename(
+                filetypes=[("Comma-separated files", "*.csv")]
+            )
+            if len(filename) > 0:
+                var.set(filename)
+        return get_file_name
+
     def get_data_file_name(self):
-        self.data_file_name = filedialog.askopenfilename(
+        filename = filedialog.askopenfilename(
             filetypes=[("Comma-separated files", "*.csv")]
         )
+        if len(filename) > 0:
+            self.data_file_var.set(filename)
 
     def get_filter_file_name(self):
-        self.filter_file_name = filedialog.askopenfilename(
+        filename = filedialog.askopenfilename(
             filetypes=[("Comma-separated files", "*.csv")]
         )
+        if len(filename) > 0:
+            self.filter_file_var.set(filedialog.askopenfilename(
+                filetypes=[("Comma-separated files", "*.csv")]
+            ))
 
     def process_files(self):
         output_file = filedialog.asksaveasfilename()
-        print('a', self.data_file_name, 'b', self.filter_file_name, 'c', output_file)
+        print('a', self.data_file_var.get(), 'b', self.filter_file_var.get(), 'c', output_file)
 
 interface = UserInterface()
 
