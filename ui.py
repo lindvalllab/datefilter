@@ -3,13 +3,18 @@ from tkinter import ttk
 from tkinter import filedialog
 
 class UserInterface:
-    def __init__(self):
+    def __init__(self, process_function):
+        """
+        process_function: function of the three filenames that performs the filtering
+        """
+        self.process_function = process_function
+
         self.root = tk.Tk()
         self.root.title("Date Filter")
 
         # Important variables
-        self.data_file_var = tk.StringVar(value='No file selected')
-        self.filter_file_var = tk.StringVar(value='No file selected')
+        self.data_file_var = tk.StringVar(value='')
+        self.filter_file_var = tk.StringVar(value='')
 
         # Set up interface
         content = ttk.Frame(self.root)
@@ -67,5 +72,8 @@ class UserInterface:
             ))
 
     def process_files(self):
-        output_file = filedialog.asksaveasfilename()
-        print('a', self.data_file_var.get(), 'b', self.filter_file_var.get(), 'c', output_file)
+        output_file = filedialog.asksaveasfilename(
+            filetypes=[("Comma-separated files", "*.csv")],
+            defaultextension=".csv"
+        )
+        self.process_function(self.data_file_var.get(), self.filter_file_var.get(), output_file)
