@@ -15,5 +15,5 @@ python -m venv dfenv
 Activate the virtual environment and install dependencies.
 ```
 source dfenv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt -r requirements-dev.txt
 ```
