@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from typing import Callable
 
 
 class UserInterface:
-    def __init__(self, process_function):
+    def __init__(self, process_function: Callable[[str, str, str], None]):
         """
         process_function: function of the three filenames that performs the filtering
         """
@@ -39,16 +40,16 @@ class UserInterface:
         filter_file_label.grid(column=0, row=1, columnspan=2, sticky=tk.W, padx=10)
         data_file_button.grid(column=2, row=0, sticky=tk.E, padx=10)
         filter_file_button.grid(column=2, row=1, sticky=tk.E, padx=10)
-        confirm_button.grid(column=2, row=2, sticky=(tk.S, tk.E), padx=10)
+        confirm_button.grid(column=2, row=2, sticky=tk.S + tk.E, padx=10)
 
         data_file_button.focus()
 
-    def run(self):
+    def run(self) -> None:
         self.root.mainloop()
 
     @staticmethod
-    def open_file_name_to_var(var):
-        def get_file_name():
+    def open_file_name_to_var(var: tk.StringVar) -> Callable[[], None]:
+        def get_file_name() -> None:
             filename = filedialog.askopenfilename(
                 filetypes=[("Comma-separated files", "*.csv")]
             )
@@ -56,23 +57,7 @@ class UserInterface:
                 var.set(filename)
         return get_file_name
 
-    def get_data_file_name(self):
-        filename = filedialog.askopenfilename(
-            filetypes=[("Comma-separated files", "*.csv")]
-        )
-        if len(filename) > 0:
-            self.data_file_var.set(filename)
-
-    def get_filter_file_name(self):
-        filename = filedialog.askopenfilename(
-            filetypes=[("Comma-separated files", "*.csv")]
-        )
-        if len(filename) > 0:
-            self.filter_file_var.set(filedialog.askopenfilename(
-                filetypes=[("Comma-separated files", "*.csv")]
-            ))
-
-    def process_files(self):
+    def process_files(self) -> None:
         output_file = filedialog.asksaveasfilename(
             filetypes=[("Comma-separated files", "*.csv")],
             defaultextension=".csv"
