@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 
+
 class UserInterface:
     def __init__(self, process_function):
         """
