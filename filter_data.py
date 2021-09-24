@@ -25,8 +25,3 @@ def filter_data(input_file: TextIO, output_file: TextIO, date_info: Dict[str, Da
     for row in reader:
         if include_row(row, date_info):
             writer.writerow(row)
-
-
-with open('../rpdr/out.csv') as file:
-    with open('new.csv', 'w') as file2:
-        filter_data(file, file2, {})
