@@ -1,12 +1,7 @@
 import csv
 import datetime
-from typing import Dict, Protocol, TextIO
-
-
-class DateInfo(Protocol):
-    anchor_date: datetime.date
-    days_before: datetime.timedelta
-    days_after: datetime.timedelta
+from typing import Dict, TextIO
+from parse_filter import DateInfo
 
 
 def include_row(row: Dict[str, str], date_info: Dict[str, DateInfo]) -> bool:
