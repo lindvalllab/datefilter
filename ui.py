@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from typing import Callable
 
 
@@ -71,8 +71,18 @@ class UserInterface:
         return get_file_name
 
     def process_files(self) -> None:
-        output_file = filedialog.asksaveasfilename(
-            filetypes=[("Comma-separated files", "*.csv")],
-            defaultextension=".csv"
-        )
-        self.process_function(self.data_file_var.get(), self.filter_file_var.get(), output_file)
+        if self.data_file_var.get() == '':
+            messagebox.showinfo('No data file selected.', message='Please select a data file')
+        elif self.filter_file_var.get() == '':
+            messagebox.showinfo('No filter file selected.', message='Please select a filter file')
+        else:
+            output_file = filedialog.asksaveasfilename(
+                filetypes=[("Comma-separated files", "*.csv")],
+                defaultextension=".csv"
+            )
+            if output_file != '':
+                self.process_function(
+                    self.data_file_var.get(), self.filter_file_var.get(), output_file
+                )
+                self.data_file_var.set('')
+                self.filter_file_var.set('')
