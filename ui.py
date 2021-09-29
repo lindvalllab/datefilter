@@ -21,17 +21,19 @@ class UserInterface:
         # Set up interface
         content = ttk.Frame(self.root)
         content.grid(column=0, row=0, sticky='nsew')
-        frame = ttk.Frame(content, borderwidth=5, relief="ridge", width=600, height=200)
+        frame = ttk.Frame(content, borderwidth=5, relief="ridge")
         frame.grid(column=0, row=0, columnspan=2, rowspan=4, sticky='nsew')
 
         data_file_label = ttk.Entry(content,
                                     textvariable=self.data_file_var,
                                     state='readonly',
-                                    font=('default', 10))
+                                    font=('default', 10),
+                                    width=40)
         filter_file_label = ttk.Entry(content,
                                       textvariable=self.filter_file_var,
                                       state='readonly',
-                                      font=('default', 10))
+                                      font=('default', 10),
+                                      width=40)
         data_file_button = ttk.Button(content,
                                       text="Select data file",
                                       command=self.open_file_name_to_var(self.data_file_var))
@@ -42,15 +44,16 @@ class UserInterface:
                                     text="Filter",
                                     command=self.process_files)
 
-        data_file_label.grid(column=0, row=0, sticky='ew', padx=10)
-        filter_file_label.grid(column=0, row=1, sticky='ew', padx=10)
-        data_file_button.grid(column=1, row=0, sticky='e', padx=10)
-        filter_file_button.grid(column=1, row=1, sticky='e', padx=10)
+        data_file_label.grid(column=0, row=0, sticky='ew', padx=10, pady=10)
+        filter_file_label.grid(column=0, row=1, sticky='ew', padx=10, pady=10)
+        data_file_button.grid(column=1, row=0, sticky='e', padx=10, pady=10)
+        filter_file_button.grid(column=1, row=1, sticky='e', padx=10, pady=10)
         confirm_button.grid(column=1, row=2, sticky='sew', padx=10, pady=10)
 
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         content.columnconfigure(0, weight=1)
+        content.columnconfigure(1, weight=0)
         content.rowconfigure(0, weight=1)
         content.rowconfigure(1, weight=1)
         content.rowconfigure(2, weight=1)
