@@ -84,8 +84,17 @@ class UserInterface:
                 defaultextension=".csv"
             )
             if output_file != '':
+                loading_window = create_loading_window(self.root)
                 self.process_function(
                     self.data_file_var.get(), self.filter_file_var.get(), output_file
                 )
+                loading_window.destroy()
+                messagebox.showinfo('Done!', message='Finished processing files.')
                 self.data_file_var.set('')
                 self.filter_file_var.set('')
+
+
+def create_loading_window(root: tk.Tk) -> tk.Toplevel:
+    loading_window = tk.Toplevel(root)
+    loading_window.attributes('-type', 'dialog')
+    return loading_window
