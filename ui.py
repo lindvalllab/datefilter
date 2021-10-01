@@ -6,7 +6,7 @@ from typing import Callable
 
 
 class UserInterface:
-    def __init__(self, process_function: Callable[[str, str, str], None]):
+    def __init__(self, process_function: Callable[[str, str, str, Callable[[str], None]], None]):
         """
         process_function: function of the three filenames that performs the filtering
         """
@@ -85,18 +85,24 @@ class UserInterface:
                 defaultextension=".csv"
             )
             if output_file != '':
+                errors: multiprocessing.Queue[str] = multiprocessing.Queue()
+
                 thread = multiprocessing.Process(
                     target=self.process_function,
                     args=(self.data_file_var.get(),
                           self.filter_file_var.get(),
-                          output_file)
+                          output_file,
+                          errors.put)
                 )
                 thread.start()
 
                 def on_finish() -> None:
-                    messagebox.showinfo('Done!', message='Finished processing files.')
-                    self.data_file_var.set('')
-                    self.filter_file_var.set('')
+                    if (errors.empty()):
+                        messagebox.showinfo('Done!', message='Finished processing files.')
+                        self.data_file_var.set('')
+                        self.filter_file_var.set('')
+                    else:
+                        messagebox.showerror('A problem occurred', message=errors.get())
 
                 create_loading_window(self.root, thread, on_finish)
 
