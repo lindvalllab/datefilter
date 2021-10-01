@@ -1,3 +1,4 @@
+import multiprocessing
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog, messagebox
@@ -84,17 +85,39 @@ class UserInterface:
                 defaultextension=".csv"
             )
             if output_file != '':
-                loading_window = create_loading_window(self.root)
-                self.process_function(
-                    self.data_file_var.get(), self.filter_file_var.get(), output_file
+                thread = multiprocessing.Process(
+                    target=self.process_function,
+                    args=(self.data_file_var.get(),
+                          self.filter_file_var.get(),
+                          output_file)
                 )
-                loading_window.destroy()
-                messagebox.showinfo('Done!', message='Finished processing files.')
-                self.data_file_var.set('')
-                self.filter_file_var.set('')
+                thread.start()
+
+                def on_finish() -> None:
+                    messagebox.showinfo('Done!', message='Finished processing files.')
+                    self.data_file_var.set('')
+                    self.filter_file_var.set('')
+
+                create_loading_window(self.root, thread, on_finish)
 
 
-def create_loading_window(root: tk.Tk) -> tk.Toplevel:
+def create_loading_window(root: tk.Tk,
+                          thread: multiprocessing.Process,
+                          on_finish: Callable[[], None]) -> None:
     loading_window = tk.Toplevel(root)
     loading_window.attributes('-type', 'dialog')
-    return loading_window
+    loading_window.title('Processing')
+    progress = ttk.Progressbar(loading_window, orient='horizontal', mode='indeterminate')
+    progress.pack()
+    progress.start(10)
+
+    def check_if_running() -> None:
+        if thread.is_alive():
+            loading_window.after(10, check_if_running)
+            print('hi')
+        else:
+            loading_window.destroy()
+            on_finish()
+
+    loading_window.after(50, check_if_running)
+    loading_window.mainloop()
