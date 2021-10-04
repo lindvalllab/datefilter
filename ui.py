@@ -123,7 +123,6 @@ def create_loading_window(root: tk.Tk,
     def check_if_running() -> None:
         if thread.is_alive():
             loading_window.after(10, check_if_running)
-            print('hi')
         else:
             loading_window.destroy()
             on_finish()
