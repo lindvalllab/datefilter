@@ -1,6 +1,6 @@
 from typing import Callable
 from filter_data import filter_data
-from parse_filter import parse_filter
+from parse_filter import parse_filter, ParseFilterException
 from ui import UserInterface
 
 
@@ -14,6 +14,8 @@ def process(data_file_path: str,
         with open(data_file_path) as data_file:
             with open(output_file_path, 'w') as output_file:
                 filter_data(data_file, output_file, date_info)
+    except ParseFilterException:
+        pass
     except Exception as e:
         append_error('An unknown error occurred. The following information may be useful. '
                      + type(e).__name__ + ': ' + str(e))

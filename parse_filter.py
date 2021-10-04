@@ -28,7 +28,7 @@ def parse_filter(input_file: TextIO, append_error: Callable[[str], None]) -> Dic
         raise ParseFilterException('None field names')
     elif set(reader.fieldnames) != {'EMPI', 'anchor_date', 'days_before', 'days_after'}:
         append_error('The filter file has incorrect field names\n"'
-                     + ', '.join(reader.fieldnames) + '".\n\n'
+                     + ', '.join(reader.fieldnames) + '".\n'
                      'They should be\n"EMPI, anchor_date, days_before, days_after".')
         raise ParseFilterException('Bad field names')
 

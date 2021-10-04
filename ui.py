@@ -102,7 +102,10 @@ class UserInterface:
                         self.data_file_var.set('')
                         self.filter_file_var.set('')
                     else:
-                        messagebox.showerror('A problem occurred', message=errors.get())
+                        error_list = []
+                        while not errors.empty():
+                            error_list.append(errors.get())
+                        messagebox.showerror('A problem occurred', message='\n\n'.join(error_list))
 
                 create_loading_window(self.root, thread, on_finish)
 
