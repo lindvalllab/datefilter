@@ -1,6 +1,6 @@
 import csv
 import datetime
-from typing import Dict, TextIO
+from typing import Callable, Dict, TextIO
 from parse_filter import DateInfo
 
 
@@ -26,7 +26,7 @@ def filter_data(input_file: TextIO,
     if 'EMPI' not in field_names:
         append_error('The data file is missing an EMPI column.')
         return
-    if 'Report_Date_Time' not in field names:
+    if 'Report_Date_Time' not in field_names:
         append_error('The data file is missing a Report_Date_Time column.')
         return
 
@@ -42,3 +42,4 @@ def filter_data(input_file: TextIO,
         except ValueError:
             append_error('The date ' + row['Report_Date_Time'] + ' is not of the '
                          'form month/day/year.')
+            return
