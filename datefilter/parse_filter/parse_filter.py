@@ -26,9 +26,25 @@ def parse_filter(input_file: TextIO, append_error: Callable[[str], None]) -> Dic
         raise ParseFilterException('Bad field names')
 
     for row in reader:
+        try:
+            anchor_date = datetime.datetime.strptime(row['anchor_date'], '%m/%d/%Y').date()
+        except ValueError:
+            append_error(f'The date {row["anchor_date"]} is incorrectly formatted.')
+            raise ParseFilterException
+        try:
+            days_before = datetime.timedelta(int(row['days_before']))
+        except ValueError:
+            append_error(f'The row days_before={row["days_before"]} is incorrectly formatted.')
+            raise ParseFilterException
+        try:
+            days_after = datetime.timedelta(int(row['days_after']))
+        except ValueError:
+            append_error(f'The row days_after={row["days_after"]} is incorrectly formatted.')
+            raise ParseFilterException
+
         out[row['EMPI']] = DateInfo(
-            anchor_date=datetime.datetime.strptime(row['anchor_date'], '%m/%d/%Y').date(),
-            days_before=datetime.timedelta(int(row['days_before'])),
-            days_after=datetime.timedelta(int(row['days_after'])),
+            anchor_date=anchor_date,
+            days_before=days_before,
+            days_after=days_after
         )
     return out
