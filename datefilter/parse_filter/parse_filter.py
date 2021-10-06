@@ -31,6 +31,9 @@ def parse_filter(input_file: TextIO, append_error: Callable[[str], None]) -> Dic
         except ValueError:
             append_error(f'The date {row["anchor_date"]} is incorrectly formatted.')
             raise ParseFilterException
+        except TypeError:
+            append_error(f'The row for patient {row["EMPI"]} is missing an anchor date')
+            raise ParseFilterException
         try:
             days_before = datetime.timedelta(int(row['days_before']))
         except ValueError:
