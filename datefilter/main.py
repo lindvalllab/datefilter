@@ -1,7 +1,7 @@
 from typing import Callable
-from filter_data import filter_data
-from parse_filter import parse_filter, ParseFilterException
-from ui import UserInterface
+from .filter_data import filter_data
+from .parse_filter import parse_filter, ParseFilterException
+from .ui import UserInterface
 
 
 def process(data_file_path: str,

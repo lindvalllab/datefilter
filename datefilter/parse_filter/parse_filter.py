@@ -1,14 +1,7 @@
 import csv
 import datetime
-from dataclasses import dataclass
 from typing import Callable, Dict, TextIO
-
-
-@dataclass
-class DateInfo:
-    anchor_date: datetime.date
-    days_before: datetime.timedelta
-    days_after: datetime.timedelta
+from ..date_info import DateInfo
 
 
 class ParseFilterException(Exception):
