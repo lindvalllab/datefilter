@@ -1,7 +1,7 @@
 import csv
 import datetime
 from typing import Callable, Dict, TextIO
-from ..date_info import DateInfo
+from date_info import DateInfo
 
 
 class ParseFilterException(Exception):

@@ -1,7 +1,7 @@
 import csv
 import datetime
 from typing import Callable, Dict, TextIO
-from ..date_info import DateInfo
+from date_info import DateInfo
 
 
 def include_row(row: Dict[str, str], date_info: Dict[str, DateInfo]) -> bool:
