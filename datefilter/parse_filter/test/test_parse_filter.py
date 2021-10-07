@@ -1,4 +1,5 @@
 import os
+import datetime
 import pytest
 from ..parse_filter import parse_filter, ParseFilterException
 
@@ -31,6 +32,19 @@ def test_parse_good_filter() -> None:
         def append_error(error: str) -> None:
             errors.append(error)
 
-        assert len(parse_filter(file, append_error)) == 3
+        filter_dict = parse_filter(file, append_error)
 
         assert len(errors) == 0
+        assert len(filter_dict) == 3
+
+        assert filter_dict['12'].anchor_date == datetime.date(1970, 1, 1)
+        assert filter_dict['12'].days_before == datetime.timedelta(10)
+        assert filter_dict['12'].days_after == datetime.timedelta(10)
+
+        assert filter_dict['23'].anchor_date == datetime.date(1980, 1, 1)
+        assert filter_dict['23'].days_before == datetime.timedelta(5)
+        assert filter_dict['23'].days_after == datetime.timedelta(5)
+
+        assert filter_dict['34'].anchor_date == datetime.date(1990, 5, 20)
+        assert filter_dict['34'].days_before == datetime.timedelta(3)
+        assert filter_dict['34'].days_after == datetime.timedelta(10)
