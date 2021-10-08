@@ -1,5 +1,9 @@
-name: Build
-on: push
+name: Build release
+
+on:
+  release:
+    types: [released]
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -26,5 +30,12 @@ jobs:
       - name: Build (windows)
         run: pyinstaller -F datefilter/datefilter.py -n datefilter-win
         if: ${{ matrix.os == 'windows-latest' }}
-      - name: Test
-        run: ls dist/
+      - name: Upload build to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.dmg
+            dist/*.exe
+            dist/*.AppImage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
