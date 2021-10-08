@@ -1,4 +1,4 @@
-name: Validate
+name: Build
 on: push
 jobs:
   build:
@@ -18,3 +18,5 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
       - name: Build
         run: pyinstaller -F datefilter/datefilter.py
+      - name: Test
+        run: ls dist/
