@@ -17,3 +17,5 @@ jobs:
         run: flake8
       - name: Type check
         run: mypy
+      - name: Run tests
+        run: pytest
