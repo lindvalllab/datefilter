@@ -15,4 +15,5 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
       - name: Lint with flake8
         flake8
-      - name: Type-check
+      - name: Type check
+        mypy
