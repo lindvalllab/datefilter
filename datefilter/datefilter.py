@@ -1,6 +1,8 @@
+import multiprocessing
 from typing import Callable
+
 from filter_data import filter_data
-from parse_filter import parse_filter, ParseFilterException
+from parse_filter import ParseFilterException, parse_filter
 from ui import UserInterface
 
 
@@ -22,5 +24,9 @@ def process(data_file_path: str,
 
 
 if __name__ == '__main__':
+    # Required for building on Windows
+    # https://github.com/pyinstaller/pyinstaller/wiki/Recipe-Multiprocessing
+    multiprocessing.freeze_support()
+
     ui = UserInterface(process)
     ui.run()
