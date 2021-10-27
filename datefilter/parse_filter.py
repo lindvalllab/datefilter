@@ -1,6 +1,8 @@
 import csv
 import datetime
+from dataclasses import dataclass
 from typing import Callable, Dict, TextIO
+
 from date_info import DateInfo
 
 
@@ -11,28 +13,40 @@ class ParseFilterException(Exception):
     """
 
 
-def parse_filter(input_file: TextIO, append_error: Callable[[str], None]) -> Dict[str, DateInfo]:
+@dataclass
+class ParsedFilter:
+    id_col: str
+    date_col: str
+    filter_dict: Dict[str, DateInfo]
+
+
+def parse_filter(input_file: TextIO, append_error: Callable[[str], None]) -> ParsedFilter:
     reader = csv.DictReader(input_file)
-    out = {}
+    filter_dict = {}
 
     if reader.fieldnames is None:
         append_error('There appears to be a problem with the filter file. '
                      'Please check that the field names are correct')
         raise ParseFilterException('None field names')
-    elif set(reader.fieldnames) != {'EMPI', 'anchor_date', 'days_before', 'days_after'}:
-        append_error('The filter file has incorrect field names\n"'
-                     + ', '.join(reader.fieldnames) + '".\n'
-                     'They should be\n"EMPI, anchor_date, days_before, days_after".')
-        raise ParseFilterException('Bad field names')
+    elif len(reader.fieldnames) != 4:
+        append_error('The filter file has an incorrect number of columns. There should be four.')
+        raise ParseFilterException('Bad number of columns')
+    elif reader.fieldnames[2] != 'days_before' or reader.fieldnames[3] != 'days_after':
+        append_error('The third and fourth columns must be\n'
+                     'days_before,days_after')
+        raise ParseFilterException('days_before,days_after')
+
+    id_col = reader.fieldnames[0]
+    date_col = reader.fieldnames[1]
 
     for row in reader:
         try:
-            anchor_date = datetime.datetime.strptime(row['anchor_date'], '%m/%d/%Y').date()
+            anchor_date = datetime.datetime.strptime(row[date_col], '%m/%d/%Y').date()
         except ValueError:
-            append_error(f'The date {row["anchor_date"]} is incorrectly formatted.')
+            append_error(f'The date {row[date_col]} is incorrectly formatted.')
             raise ParseFilterException
         except TypeError:
-            append_error(f'The row for patient {row["EMPI"]} is missing an anchor date')
+            append_error(f'The row for patient {row[id_col]} is missing an anchor date')
             raise ParseFilterException
         try:
             days_before = datetime.timedelta(int(row['days_before']))
@@ -45,9 +59,13 @@ def parse_filter(input_file: TextIO, append_error: Callable[[str], None]) -> Dic
             append_error(f'The row days_after={row["days_after"]} is incorrectly formatted.')
             raise ParseFilterException
 
-        out[row['EMPI']] = DateInfo(
+        filter_dict[row[id_col]] = DateInfo(
             anchor_date=anchor_date,
             days_before=days_before,
             days_after=days_after
         )
-    return out
+    return ParsedFilter(
+        id_col=id_col,
+        date_col=date_col,
+        filter_dict=filter_dict,
+    )

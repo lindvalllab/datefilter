@@ -1,45 +1,46 @@
 import csv
 import datetime
 from typing import Callable, Dict, TextIO
-from date_info import DateInfo
+
+from parse_filter import ParsedFilter
 
 
-def include_row(row: Dict[str, str], date_info: Dict[str, DateInfo]) -> bool:
-    if row['EMPI'] not in date_info:
+def include_row(row: Dict[str, str], parsed_filter: ParsedFilter) -> bool:
+    if row[parsed_filter.id_col] not in parsed_filter.filter_dict:
         return True
-    patient_date_info = date_info[row['EMPI']]
+    patient_date_info = parsed_filter.filter_dict[row[parsed_filter.id_col]]
     first_date = patient_date_info.anchor_date - patient_date_info.days_before
     last_date = patient_date_info.anchor_date + patient_date_info.days_after
-    stripped_date = row['Report_Date_Time'].split()[0]
+    stripped_date = row[parsed_filter.date_col].split()[0]
     row_date = datetime.datetime.strptime(stripped_date, '%m/%d/%Y').date()
     return first_date <= row_date <= last_date
 
 
 def filter_data(input_file: TextIO,
                 output_file: TextIO,
-                date_info: Dict[str, DateInfo],
+                parsed_filter: ParsedFilter,
                 append_error: Callable[[str], None]) -> None:
     reader = csv.DictReader(input_file)
 
     # For the type-checker. The field names shouldn't be None.
     field_names = reader.fieldnames if reader.fieldnames is not None else []
-    if 'EMPI' not in field_names:
-        append_error('The data file is missing an EMPI column.')
+    if parsed_filter.id_col not in field_names:
+        append_error(f'The column {parsed_filter.id_col} does not occur in the data file.')
         return
-    if 'Report_Date_Time' not in field_names:
-        append_error('The data file is missing a Report_Date_Time column.')
+    if parsed_filter.date_col not in field_names:
+        append_error(f'The column {parsed_filter.date_col} does not occur in the data file.')
         return
 
     writer = csv.DictWriter(output_file, field_names)
     writer.writeheader()
     for row in reader:
-        if row['EMPI'] is None or row['Report_Date_Time'] is None:
+        if row[parsed_filter.id_col] is None or row[parsed_filter.date_col] is None:
             append_error('Some rows are incomplete.')
             return
         try:
-            if include_row(row, date_info):
+            if include_row(row, parsed_filter):
                 writer.writerow(row)
         except ValueError:
-            append_error('The date ' + row['Report_Date_Time'] + ' is not of the '
-                         'form month/day/year.')
+            append_error(f'The date {row[parsed_filter.date_col]} is not'
+                         'of the form month/day/year.')
             return

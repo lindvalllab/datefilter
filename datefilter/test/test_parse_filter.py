@@ -10,6 +10,7 @@ from parse_filter import parse_filter, ParseFilterException
     'files/filter_bad_before.csv',
     'files/filter_bad_after.csv',
     'files/filter_incomplete_row.csv',
+    'files/filter_short_header.csv',
 ])
 def test_parse_bad_filter(filter_path: str) -> None:
     with open(os.path.join(os.path.dirname(__file__), filter_path)) as file:
@@ -32,7 +33,7 @@ def test_parse_good_filter() -> None:
         def append_error(error: str) -> None:
             errors.append(error)
 
-        filter_dict = parse_filter(file, append_error)
+        filter_dict = parse_filter(file, append_error).filter_dict
 
         assert len(errors) == 0
         assert len(filter_dict) == 3
