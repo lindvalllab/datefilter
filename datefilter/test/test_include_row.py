@@ -1,7 +1,7 @@
 import datetime
 
 from date_info import DateInfo
-from ..filter_data import include_row
+from filter_data import include_row
 
 
 def test_include_row_true() -> None:

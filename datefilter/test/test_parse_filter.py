@@ -1,7 +1,7 @@
 import os
 import datetime
 import pytest
-from ..parse_filter import parse_filter, ParseFilterException
+from parse_filter import parse_filter, ParseFilterException
 
 
 @pytest.mark.parametrize('filter_path', [
