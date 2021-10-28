@@ -1,5 +1,6 @@
 import csv
 import datetime
+import os
 from typing import Callable, Dict, TextIO
 
 from parse_filter import ParsedFilter
@@ -31,7 +32,7 @@ def filter_data(input_file: TextIO,
         append_error(f'The column {parsed_filter.date_col} does not occur in the data file.')
         return
 
-    writer = csv.DictWriter(output_file, field_names)
+    writer = csv.DictWriter(output_file, field_names, lineterminator=os.linesep)
     writer.writeheader()
     for row in reader:
         if row[parsed_filter.id_col] is None or row[parsed_filter.date_col] is None:

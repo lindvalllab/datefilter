@@ -11,9 +11,9 @@ def process(data_file_path: str,
             output_file_path: str,
             append_error: Callable[[str], None]) -> None:
     try:
-        with open(filter_file_path) as filter_file:
+        with open(filter_file_path, newline='') as filter_file:
             date_info = parse_filter(filter_file, append_error)
-        with open(data_file_path) as data_file:
+        with open(data_file_path, newline='') as data_file:
             with open(output_file_path, 'w') as output_file:
                 filter_data(data_file, output_file, date_info, append_error)
     except ParseFilterException:
