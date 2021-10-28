@@ -1,5 +1,6 @@
 import csv
 import datetime
+import os
 from typing import Callable, Dict, TextIO
 from date_info import DateInfo
 
@@ -30,7 +31,7 @@ def filter_data(input_file: TextIO,
         append_error('The data file is missing a Report_Date_Time column.')
         return
 
-    writer = csv.DictWriter(output_file, field_names)
+    writer = csv.DictWriter(output_file, field_names, lineterminator=os.linesep)
     writer.writeheader()
     for row in reader:
         if row['EMPI'] is None or row['Report_Date_Time'] is None:
