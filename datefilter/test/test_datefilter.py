@@ -7,7 +7,8 @@ from datefilter import process
 
 
 @pytest.mark.parametrize('sample_name', [
-    'files/full_example',
+    'files/full_example_1',
+    'files/full_example_2',
 ])
 def test_process(sample_name: str) -> None:
     errors = []
