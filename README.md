@@ -11,11 +11,17 @@ there needs to be a Report\_Date\_Time column with the date formatted as month/d
 In order to filter the data, you also need a separate .csv file containing information about each
 patient. The header will look like
 ```
-EMPI,anchor_date,days_before,days_after
+EMPI,Report_Date_Time,days_before,days_after
 ```
 For each EMPI, you specify the anchor date (again as month/day/year) as well as how many days
 before and after the date you are interested in collecting data from. **Any patient not included in
 the filter file will not be filtered; all records will be included**.
+
+If you want to specify patient information using other information than the EMPI (e.g. the MRN),
+that works too. Simply change `EMPI` above to `MRN` (or whatever column name you choose).
+Similarly, if the date column is called something else, you can change `Report_Date_Time` to the
+appropriate column name. However, the third and fourth columns must be `days_before` and
+`days_after` as above.
 
 In the application, simply select your data file and filter file, and press "Filter". You will be
 asked for a location to save the filtered data. The application will let you know when it is done
