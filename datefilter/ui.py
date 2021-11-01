@@ -1,7 +1,7 @@
 import multiprocessing
+import sys
 import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 from typing import Callable
 
 
@@ -114,7 +114,10 @@ def create_loading_window(root: tk.Tk,
                           thread: multiprocessing.Process,
                           on_finish: Callable[[], None]) -> None:
     loading_window = tk.Toplevel(root)
-    loading_window.attributes('-type', 'dialog')
+    if sys.platform.startswith('linux'):
+        loading_window.attributes('-type', 'dialog')
+    elif sys.platform.startswith('windows'):
+        loading_window.attributes('-toolwindow', True)
     loading_window.title('Processing')
     progress = ttk.Progressbar(loading_window, orient='horizontal', mode='indeterminate')
     progress.pack()
