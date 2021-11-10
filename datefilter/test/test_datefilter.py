@@ -21,6 +21,7 @@ def test_process(sample_name: str) -> None:
     process(prefix + '_data.csv',
             prefix + '_filter.csv',
             prefix + '_test_output.csv',
+            False,
             append_error)
 
     assert filecmp.cmp(prefix + '_test_output.csv',

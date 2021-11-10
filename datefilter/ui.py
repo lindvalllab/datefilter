@@ -6,7 +6,8 @@ from typing import Callable
 
 
 class UserInterface:
-    def __init__(self, process_function: Callable[[str, str, str, Callable[[str], None]], None]):
+    def __init__(self,
+                 process_function: Callable[[str, str, str, bool, Callable[[str], None]], None]):
         """
         process_function: function of the three filenames that performs the filtering
         """
@@ -18,6 +19,7 @@ class UserInterface:
         # Important variables
         self.data_file_var = tk.StringVar(value='')
         self.filter_file_var = tk.StringVar(value='')
+        self.include_missing_var = tk.StringVar(value='0')
 
         # Set up interface
         content = ttk.Frame(self.root)
@@ -41,6 +43,9 @@ class UserInterface:
         filter_file_button = ttk.Button(content,
                                         text="Select filter file",
                                         command=self.open_file_name_to_var(self.filter_file_var))
+        include_missing_check = ttk.Checkbutton(content,
+                                                text="Include entries missing from filter file",
+                                                variable=self.include_missing_var)
         confirm_button = ttk.Button(content,
                                     text="Filter",
                                     command=self.process_files)
@@ -49,6 +54,7 @@ class UserInterface:
         filter_file_label.grid(column=0, row=1, sticky='ew', padx=10, pady=10)
         data_file_button.grid(column=1, row=0, sticky='e', padx=10, pady=10)
         filter_file_button.grid(column=1, row=1, sticky='e', padx=10, pady=10)
+        include_missing_check.grid(column=0, row=2, sticky='sw', padx=10, pady=10)
         confirm_button.grid(column=1, row=2, sticky='sew', padx=10, pady=10)
 
         self.root.columnconfigure(0, weight=1)
@@ -75,6 +81,7 @@ class UserInterface:
         return get_file_name
 
     def process_files(self) -> None:
+        print(self.include_missing_var.get())
         if self.data_file_var.get() == '':
             messagebox.showinfo('No data file selected.', message='Please select a data file')
         elif self.filter_file_var.get() == '':
@@ -92,6 +99,7 @@ class UserInterface:
                     args=(self.data_file_var.get(),
                           self.filter_file_var.get(),
                           output_file,
+                          self.include_missing_var.get() == '1',
                           errors.put)
                 )
                 thread.start()
