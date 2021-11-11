@@ -35,21 +35,24 @@ class UserInterface:
                                       state='readonly',
                                       font=('default', 10),
                                       width=40)
-        data_file_button = ttk.Button(content,
-                                      text="Select data file",
-                                      command=self.open_file_name_to_var(self.data_file_var))
-        filter_file_button = ttk.Button(content,
-                                        text="Select filter file",
-                                        command=self.open_file_name_to_var(self.filter_file_var))
-        confirm_button = ttk.Button(content,
-                                    text="Filter",
-                                    command=self.process_files)
+        self.data_file_button = ttk.Button(
+            content,
+            text="Select data file",
+            command=self.open_file_name_to_var(self.data_file_var))
+        self.filter_file_button = ttk.Button(
+            content,
+            text="Select filter file",
+            command=self.open_file_name_to_var(self.filter_file_var))
+        self.confirm_button = ttk.Button(
+            content,
+            text="Filter",
+            command=self.process_files)
 
         data_file_label.grid(column=0, row=0, sticky='ew', padx=10, pady=10)
         filter_file_label.grid(column=0, row=1, sticky='ew', padx=10, pady=10)
-        data_file_button.grid(column=1, row=0, sticky='e', padx=10, pady=10)
-        filter_file_button.grid(column=1, row=1, sticky='e', padx=10, pady=10)
-        confirm_button.grid(column=1, row=2, sticky='sew', padx=10, pady=10)
+        self.data_file_button.grid(column=1, row=0, sticky='e', padx=10, pady=10)
+        self.filter_file_button.grid(column=1, row=1, sticky='e', padx=10, pady=10)
+        self.confirm_button.grid(column=1, row=2, sticky='sew', padx=10, pady=10)
 
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
@@ -59,7 +62,7 @@ class UserInterface:
         content.rowconfigure(1, weight=1)
         content.rowconfigure(2, weight=1)
 
-        data_file_button.focus()
+        self.data_file_button.focus()
 
     def run(self) -> None:
         self.root.mainloop()
@@ -85,6 +88,9 @@ class UserInterface:
                 defaultextension=".csv"
             )
             if output_file != '':
+                self.data_file_button['state'] = tk.DISABLED
+                self.filter_file_button['state'] = tk.DISABLED
+                self.confirm_button['state'] = tk.DISABLED
                 errors: multiprocessing.Queue[str] = multiprocessing.Queue()
 
                 thread = multiprocessing.Process(
@@ -106,6 +112,10 @@ class UserInterface:
                         while not errors.empty():
                             error_list.append(errors.get())
                         messagebox.showerror('A problem occurred', message='\n\n'.join(error_list))
+
+                    self.data_file_button['state'] = tk.NORMAL
+                    self.filter_file_button['state'] = tk.NORMAL
+                    self.confirm_button['state'] = tk.NORMAL
 
                 create_loading_window(self.root, thread, on_finish)
 
