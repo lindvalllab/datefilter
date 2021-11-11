@@ -1,7 +1,7 @@
 MRN,Date_Time,Report_Text
-1,01/01/2020,"Lorem ipsum",
-1,02/01/2020,"Second
+1,01/01/2020 11:34:32 AM,"Lorem ipsum",
+1,02/01/2020 2:22:54 PM,"Second
 Text"
-2,01/01/2020,"Dolor
+2,01/01/2020 9:04:21 AM,"Dolor
 sit"
-2,02/01/2020,"Report text"
+2,02/01/2020 4:54:09 PM,"Report text"
