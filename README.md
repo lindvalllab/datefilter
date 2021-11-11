@@ -14,8 +14,9 @@ patient. The header will look like
 EMPI,Report_Date_Time,days_before,days_after
 ```
 For each EMPI, you specify the anchor date (again as month/day/year) as well as how many days
-before and after the date you are interested in collecting data from. **Any patient not included in
-the filter file will not be filtered; all records will be included**.
+before and after the date you are interested in collecting data from. By default, if a patient is
+not included in the filter file, their records will not be included in the output. To change this
+behavior, check the check box.
 
 If you want to specify patient information using other information than the EMPI (e.g. the MRN),
 that works too. Simply change `EMPI` above to `MRN` (or whatever column name you choose).
