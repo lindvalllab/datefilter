@@ -6,19 +6,20 @@ from typing import Callable, Dict, TextIO
 from parse_filter import ParsedFilter
 
 
-def include_row(row: Dict[str, str], parsed_filter: ParsedFilter) -> bool:
+def include_row(row: Dict[str, str], date_format: str, parsed_filter: ParsedFilter) -> bool:
     if row[parsed_filter.id_col] not in parsed_filter.filter_dict:
         return True
     patient_date_info = parsed_filter.filter_dict[row[parsed_filter.id_col]]
     first_date = patient_date_info.anchor_date - patient_date_info.days_before
     last_date = patient_date_info.anchor_date + patient_date_info.days_after
     stripped_date = row[parsed_filter.date_col].split()[0]
-    row_date = datetime.datetime.strptime(stripped_date, '%m/%d/%Y').date()
+    row_date = datetime.datetime.strptime(stripped_date, date_format).date()
     return first_date <= row_date <= last_date
 
 
 def filter_data(input_file: TextIO,
                 output_file: TextIO,
+                date_format: str,
                 parsed_filter: ParsedFilter,
                 append_error: Callable[[str], None]) -> None:
     reader = csv.DictReader(input_file)
@@ -39,7 +40,7 @@ def filter_data(input_file: TextIO,
             append_error('Some rows are incomplete.')
             return
         try:
-            if include_row(row, parsed_filter):
+            if include_row(row, date_format, parsed_filter):
                 writer.writerow(row)
         except ValueError:
             append_error(f'The date {row[parsed_filter.date_col]} is not'

@@ -20,7 +20,7 @@ def test_parse_bad_filter(filter_path: str) -> None:
             errors.append(error)
 
         with pytest.raises(ParseFilterException):
-            parse_filter(file, append_error)
+            parse_filter(file, '%m/%d/%Y', append_error)
 
         # These should only present a single error to the user.
         assert len(errors) == 1
@@ -33,7 +33,7 @@ def test_parse_good_filter() -> None:
         def append_error(error: str) -> None:
             errors.append(error)
 
-        filter_dict = parse_filter(file, append_error).filter_dict
+        filter_dict = parse_filter(file, '%m/%d/%Y', append_error).filter_dict
 
         assert len(errors) == 0
         assert len(filter_dict) == 3

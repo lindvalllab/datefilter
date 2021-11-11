@@ -20,7 +20,9 @@ class ParsedFilter:
     filter_dict: Dict[str, DateInfo]
 
 
-def parse_filter(input_file: TextIO, append_error: Callable[[str], None]) -> ParsedFilter:
+def parse_filter(input_file: TextIO,
+                 date_format: str,
+                 append_error: Callable[[str], None]) -> ParsedFilter:
     reader = csv.DictReader(input_file)
     filter_dict = {}
 
@@ -41,7 +43,7 @@ def parse_filter(input_file: TextIO, append_error: Callable[[str], None]) -> Par
 
     for row in reader:
         try:
-            anchor_date = datetime.datetime.strptime(row[date_col], '%m/%d/%Y').date()
+            anchor_date = datetime.datetime.strptime(row[date_col], date_format).date()
         except ValueError:
             append_error(f'The date {row[date_col]} is incorrectly formatted.')
             raise ParseFilterException

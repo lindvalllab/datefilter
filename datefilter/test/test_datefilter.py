@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from datefilter import process
+from datefilter import create_process
 
 
 @pytest.mark.parametrize('sample_name', [
@@ -17,6 +17,8 @@ def test_process(sample_name: str) -> None:
         errors.append(error)
 
     prefix = os.path.join(os.path.dirname(__file__), sample_name)
+
+    process = create_process('%m/%d/%Y')
 
     process(prefix + '_data.csv',
             prefix + '_filter.csv',
