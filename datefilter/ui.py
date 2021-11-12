@@ -19,7 +19,7 @@ class UserInterface:
         # Important variables
         self.data_file_var = tk.StringVar(value='')
         self.filter_file_var = tk.StringVar(value='')
-        self.include_missing_var = tk.StringVar(value='0')
+        self.include_missing_var = tk.BooleanVar(value=False)
 
         # Set up interface
         content = ttk.Frame(self.root)
@@ -107,7 +107,7 @@ class UserInterface:
                     args=(self.data_file_var.get(),
                           self.filter_file_var.get(),
                           output_file,
-                          self.include_missing_var.get() == '1',
+                          self.include_missing_var.get(),
                           errors.put)
                 )
                 thread.start()
