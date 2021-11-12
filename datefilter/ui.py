@@ -1,12 +1,13 @@
 import multiprocessing
+import sys
 import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 from typing import Callable
 
 
 class UserInterface:
-    def __init__(self, process_function: Callable[[str, str, str, Callable[[str], None]], None]):
+    def __init__(self,
+                 process_function: Callable[[str, str, str, bool, Callable[[str], None]], None]):
         """
         process_function: function of the three filenames that performs the filtering
         """
@@ -18,6 +19,7 @@ class UserInterface:
         # Important variables
         self.data_file_var = tk.StringVar(value='')
         self.filter_file_var = tk.StringVar(value='')
+        self.include_missing_var = tk.StringVar(value='0')
 
         # Set up interface
         content = ttk.Frame(self.root)
@@ -47,11 +49,16 @@ class UserInterface:
             content,
             text="Filter",
             command=self.process_files)
+        self.include_missing_check = ttk.Checkbutton(
+            content,
+            text="Include entries missing from filter file",
+            variable=self.include_missing_var)
 
         data_file_label.grid(column=0, row=0, sticky='ew', padx=10, pady=10)
         filter_file_label.grid(column=0, row=1, sticky='ew', padx=10, pady=10)
         self.data_file_button.grid(column=1, row=0, sticky='e', padx=10, pady=10)
         self.filter_file_button.grid(column=1, row=1, sticky='e', padx=10, pady=10)
+        self.include_missing_check.grid(column=0, row=2, sticky='sw', padx=10, pady=10)
         self.confirm_button.grid(column=1, row=2, sticky='sew', padx=10, pady=10)
 
         self.root.columnconfigure(0, weight=1)
@@ -78,6 +85,7 @@ class UserInterface:
         return get_file_name
 
     def process_files(self) -> None:
+        print(self.include_missing_var.get())
         if self.data_file_var.get() == '':
             messagebox.showinfo('No data file selected.', message='Please select a data file')
         elif self.filter_file_var.get() == '':
@@ -91,6 +99,7 @@ class UserInterface:
                 self.data_file_button['state'] = tk.DISABLED
                 self.filter_file_button['state'] = tk.DISABLED
                 self.confirm_button['state'] = tk.DISABLED
+                self.include_missing_check['state'] = tk.DISABLED
                 errors: multiprocessing.Queue[str] = multiprocessing.Queue()
 
                 thread = multiprocessing.Process(
@@ -98,6 +107,7 @@ class UserInterface:
                     args=(self.data_file_var.get(),
                           self.filter_file_var.get(),
                           output_file,
+                          self.include_missing_var.get() == '1',
                           errors.put)
                 )
                 thread.start()
@@ -116,6 +126,7 @@ class UserInterface:
                     self.data_file_button['state'] = tk.NORMAL
                     self.filter_file_button['state'] = tk.NORMAL
                     self.confirm_button['state'] = tk.NORMAL
+                    self.include_missing_check['state'] = tk.NORMAL
 
                 create_loading_window(self.root, thread, on_finish)
 
@@ -124,7 +135,10 @@ def create_loading_window(root: tk.Tk,
                           thread: multiprocessing.Process,
                           on_finish: Callable[[], None]) -> None:
     loading_window = tk.Toplevel(root)
-    loading_window.attributes('-type', 'dialog')
+    if sys.platform.startswith('linux'):
+        loading_window.attributes('-type', 'dialog')
+    elif sys.platform.startswith('windows'):
+        loading_window.attributes('-toolwindow', True)
     loading_window.title('Processing')
     progress = ttk.Progressbar(loading_window, orient='horizontal', mode='indeterminate')
     progress.pack()
