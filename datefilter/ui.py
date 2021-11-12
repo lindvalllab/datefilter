@@ -85,7 +85,6 @@ class UserInterface:
         return get_file_name
 
     def process_files(self) -> None:
-        print(self.include_missing_var.get())
         if self.data_file_var.get() == '':
             messagebox.showinfo('No data file selected.', message='Please select a data file')
         elif self.filter_file_var.get() == '':
