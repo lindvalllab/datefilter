@@ -19,7 +19,7 @@ def test_include_row_true() -> None:
         date_col='Report_Date_Time',
         filter_dict=date_info,
     )
-    assert include_row(row, '%m/%d/%Y', parsed_filter)
+    assert include_row(row, '%m/%d/%Y', parsed_filter, False)
 
 
 def test_include_row_false() -> None:
@@ -36,7 +36,7 @@ def test_include_row_false() -> None:
         date_col='Report_Date_Time',
         filter_dict=date_info,
     )
-    assert not include_row(row, '%m/%d/%Y', parsed_filter)
+    assert not include_row(row, '%m/%d/%Y', parsed_filter, False)
 
 
 def test_include_row_negative_before() -> None:
@@ -64,9 +64,9 @@ def test_include_row_negative_before() -> None:
         filter_dict=date_info,
     )
 
-    assert not include_row(too_early_row, '%m/%d/%Y', parsed_filter)
-    assert not include_row(too_late_row, '%m/%d/%Y', parsed_filter)
-    assert include_row(included_row, '%m/%d/%Y', parsed_filter)
+    assert not include_row(too_early_row, '%m/%d/%Y', parsed_filter, False)
+    assert not include_row(too_late_row, '%m/%d/%Y', parsed_filter, False)
+    assert include_row(included_row, '%m/%d/%Y', parsed_filter, False)
 
 
 def test_include_row_negative_after() -> None:
@@ -94,6 +94,6 @@ def test_include_row_negative_after() -> None:
         filter_dict=date_info,
     )
 
-    assert not include_row(too_early_row, '%m/%d/%Y', parsed_filter)
-    assert not include_row(too_late_row, '%m/%d/%Y', parsed_filter)
-    assert include_row(included_row, '%m/%d/%Y', parsed_filter)
+    assert not include_row(too_early_row, '%m/%d/%Y', parsed_filter, False)
+    assert not include_row(too_late_row, '%m/%d/%Y', parsed_filter, False)
+    assert include_row(included_row, '%m/%d/%Y', parsed_filter, False)
