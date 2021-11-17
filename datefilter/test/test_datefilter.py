@@ -3,7 +3,8 @@ import os
 
 import pytest
 
-from datefilter import create_process
+from datefilter import process
+from config import DatefilterConfig
 
 
 @pytest.mark.parametrize('sample_name', [
@@ -17,13 +18,15 @@ def test_process(sample_name: str) -> None:
         errors.append(error)
 
     prefix = os.path.join(os.path.dirname(__file__), sample_name)
-
-    process = create_process('%m/%d/%Y')
+    config = DatefilterConfig(
+        date_format='%m/%d/%Y',
+        include_missing=False
+    )
 
     process(prefix + '_data.csv',
             prefix + '_filter.csv',
             prefix + '_test_output.csv',
-            False,
+            config,
             append_error)
 
     assert filecmp.cmp(prefix + '_test_output.csv',
@@ -40,22 +43,29 @@ def test_process_include_exclude_missing() -> None:
 
     prefix = os.path.join(os.path.dirname(__file__), 'files/missing_patient')
 
-    process = create_process('%m/%d/%Y')
+    include_config = DatefilterConfig(
+        date_format='%m/%d/%Y',
+        include_missing=True
+    )
 
     process(prefix + '_data.csv',
             prefix + '_filter.csv',
             prefix + '_include_test_output.csv',
-            True,
+            include_config,
             append_error)
 
     assert len(errors) == 0
     assert filecmp.cmp(prefix + '_include_test_output.csv',
                        prefix + '_include_expected_output.csv')
 
+    exclude_config = DatefilterConfig(
+        date_format='%m/%d/%Y',
+        include_missing=False
+    )
     process(prefix + '_data.csv',
             prefix + '_filter.csv',
             prefix + '_exclude_test_output.csv',
-            False,
+            exclude_config,
             append_error)
 
     assert len(errors) == 0

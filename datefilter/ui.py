@@ -2,16 +2,28 @@ import multiprocessing
 import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-from typing import Callable
+from typing import Callable, Optional
+
+from config import DatefilterConfig
 
 
 class UserInterface:
-    def __init__(self,
-                 process_function: Callable[[str, str, str, bool, Callable[[str], None]], None]):
+    def __init__(
+        self,
+        process_function: Callable[
+            [str, str, str, DatefilterConfig, Callable[[str], None]], None
+        ],
+        config: DatefilterConfig,
+        write_config: Callable[[DatefilterConfig], None],
+    ):
         """
-        process_function: function of the three filenames that performs the filtering
+        process_function: function that performs the filtering
+        config: user-specified settings
+        write_config: function to save settings to disk
         """
         self.process_function = process_function
+        self.config = config
+        self.write_config = write_config
 
         self.root = tk.Tk()
         self.root.title("Date Filter")
@@ -19,7 +31,8 @@ class UserInterface:
         # Important variables
         self.data_file_var = tk.StringVar(value='')
         self.filter_file_var = tk.StringVar(value='')
-        self.include_missing_var = tk.BooleanVar(value=False)
+        self.include_missing_var = tk.BooleanVar(value=self.config.include_missing)
+        self.date_format_var = tk.StringVar(value=self.config.date_format)
 
         # Set up interface
         content = ttk.Frame(self.root)
@@ -45,20 +58,20 @@ class UserInterface:
             content,
             text="Select filter file",
             command=self.open_file_name_to_var(self.filter_file_var))
+        self.settings_button = ttk.Button(
+            content,
+            text="Settings...",
+            command=self.create_settings_window)
         self.confirm_button = ttk.Button(
             content,
             text="Filter",
             command=self.process_files)
-        self.include_missing_check = ttk.Checkbutton(
-            content,
-            text="Include entries missing from filter file",
-            variable=self.include_missing_var)
 
         data_file_label.grid(column=0, row=0, sticky='ew', padx=10, pady=10)
         filter_file_label.grid(column=0, row=1, sticky='ew', padx=10, pady=10)
         self.data_file_button.grid(column=1, row=0, sticky='e', padx=10, pady=10)
         self.filter_file_button.grid(column=1, row=1, sticky='e', padx=10, pady=10)
-        self.include_missing_check.grid(column=0, row=2, sticky='sw', padx=10, pady=10)
+        self.settings_button.grid(column=0, row=2, sticky='sw', padx=10, pady=10)
         self.confirm_button.grid(column=1, row=2, sticky='sew', padx=10, pady=10)
 
         self.root.columnconfigure(0, weight=1)
@@ -98,7 +111,6 @@ class UserInterface:
                 self.data_file_button['state'] = tk.DISABLED
                 self.filter_file_button['state'] = tk.DISABLED
                 self.confirm_button['state'] = tk.DISABLED
-                self.include_missing_check['state'] = tk.DISABLED
                 errors: multiprocessing.Queue[str] = multiprocessing.Queue()
 
                 thread = multiprocessing.Process(
@@ -106,7 +118,7 @@ class UserInterface:
                     args=(self.data_file_var.get(),
                           self.filter_file_var.get(),
                           output_file,
-                          self.include_missing_var.get(),
+                          self.config,
                           errors.put)
                 )
                 thread.start()
@@ -125,9 +137,83 @@ class UserInterface:
                     self.data_file_button['state'] = tk.NORMAL
                     self.filter_file_button['state'] = tk.NORMAL
                     self.confirm_button['state'] = tk.NORMAL
-                    self.include_missing_check['state'] = tk.NORMAL
 
                 create_loading_window(self.root, thread, on_finish)
+
+    def create_settings_window(self) -> None:
+        settings_window = tk.Toplevel(self.root)
+        settings_window.title('Settings')
+        if sys.platform.startswith('linux'):
+            settings_window.attributes('-type', 'dialog')
+
+        self.update_settings_vars()
+
+        def destroy_window() -> None:
+            # The traces in the variables need to be reset each time the window opens
+            for trace in self.date_format_var.trace_info():
+                for trace_type in trace[0]:
+                    self.date_format_var.trace_remove(trace_type, trace[1])
+            for trace in self.include_missing_var.trace_info():
+                for trace_type in trace[0]:
+                    self.include_missing_var.trace_remove(trace_type, trace[1])
+            settings_window.destroy()
+
+        include_missing_check = ttk.Checkbutton(
+            settings_window,
+            text="Include entries missing from filter file",
+            variable=self.include_missing_var)
+        date_format_label = ttk.Label(settings_window, text='Date format:')
+        date_format_text = ttk.Entry(
+            settings_window,
+            textvariable=self.date_format_var,
+        )
+        set_default_button = ttk.Button(settings_window,
+                                        text='Restore defaults',
+                                        command=self.reset_settings)
+        cancel_button = ttk.Button(settings_window,
+                                   text='Close',
+                                   command=destroy_window)
+        apply_button = ttk.Button(settings_window,
+                                  text='Apply',
+                                  command=self.apply_settings,
+                                  state=tk.DISABLED)
+
+        def check_settings_change(x: str, y: str, z: str) -> None:
+            if self.config.date_format != self.date_format_var.get() or\
+                    self.config.include_missing != self.include_missing_var.get():
+                apply_button['state'] = tk.NORMAL
+            else:
+                apply_button['state'] = tk.DISABLED
+
+        self.date_format_var.trace_add('write', check_settings_change)
+        self.include_missing_var.trace_add('write', check_settings_change)
+
+        include_missing_check.grid(row=0, column=0, sticky='nw', columnspan=3, padx=10, pady=10)
+        date_format_label.grid(row=1, column=0, sticky='ew', padx=10, pady=10)
+        date_format_text.grid(row=1, column=1, sticky='w', padx=10, pady=10, columnspan=2)
+        set_default_button.grid(row=2, column=0, sticky='sw', padx=10, pady=10)
+        cancel_button.grid(row=2, column=1, sticky='se', padx=10, pady=10)
+        apply_button.grid(row=2, column=2, sticky='se', padx=10, pady=10)
+        settings_window.columnconfigure(0, weight=0)
+        settings_window.columnconfigure(1, weight=1)
+        settings_window.columnconfigure(2, weight=1)
+        settings_window.rowconfigure(0, weight=1)
+        settings_window.rowconfigure(1, weight=1)
+        settings_window.rowconfigure(2, weight=1)
+
+    def reset_settings(self) -> None:
+        self.update_settings_vars(DatefilterConfig())
+
+    def update_settings_vars(self, config: Optional[DatefilterConfig] = None) -> None:
+        if config is None:
+            config = self.config
+        self.include_missing_var.set(config.include_missing)
+        self.date_format_var.set(config.date_format)
+
+    def apply_settings(self) -> None:
+        self.config.include_missing = self.include_missing_var.get()
+        self.config.date_format = self.date_format_var.get()
+        self.write_config(self.config)
 
 
 def create_loading_window(root: tk.Tk,
