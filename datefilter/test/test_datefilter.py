@@ -29,7 +29,6 @@ def test_process(sample_name: str, date_format: str) -> None:
             config,
             append_error)
 
-    print(errors)
     assert filecmp.cmp(prefix + '_test_output.csv',
                        prefix + '_expected_output.csv')
 

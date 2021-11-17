@@ -31,7 +31,3 @@ def write_config(config: DatefilterConfig) -> None:
     config_dict = dataclasses.asdict(config)
     with open(config_path, 'w') as config_file:
         json.dump(config_dict, config_file, indent=1)
-
-
-if __name__ == '__main__':
-    print(parse_config())
