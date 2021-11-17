@@ -15,8 +15,18 @@ def include_row(row: Dict[str, str],
     patient_date_info = parsed_filter.filter_dict[row[parsed_filter.id_col]]
     first_date = patient_date_info.anchor_date - patient_date_info.days_before
     last_date = patient_date_info.anchor_date + patient_date_info.days_after
-    stripped_date = row[parsed_filter.date_col].split()[0]
-    row_date = datetime.datetime.strptime(stripped_date, date_format).date()
+    date_col = row[parsed_filter.date_col]  # .split()[0]
+    try:
+        row_date = datetime.datetime.strptime(date_col, date_format).date()
+    except ValueError as e:
+        # Check if the start of the string can be parsed.
+        # https://stackoverflow.com/questions/5045210/
+        if len(e.args) > 0 and e.args[0].startswith('unconverted data remains: '):
+            extra_length = len(e.args[0]) - len('unconverted data remains: ')
+            date_text = date_col[:-extra_length]
+            row_date = datetime.datetime.strptime(date_text, date_format).date()
+        else:
+            raise
     return first_date <= row_date <= last_date
 
 
@@ -47,6 +57,7 @@ def filter_data(input_file: TextIO,
             if include_row(row, date_format, parsed_filter, include_missing):
                 writer.writerow(row)
         except ValueError:
-            append_error(f'The date {row[parsed_filter.date_col]} is not'
-                         'of the form month/day/year.')
+            append_error(
+                f'The date {row[parsed_filter.date_col]} is not of the form {date_format}.'
+            )
             return
