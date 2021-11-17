@@ -7,11 +7,11 @@ from datefilter import process
 from config import DatefilterConfig
 
 
-@pytest.mark.parametrize('sample_name', [
-    'files/full_example_1',
-    'files/full_example_2',
+@pytest.mark.parametrize('sample_name,date_format', [
+    ('files/full_example_1', '%m/%d/%Y'),
+    ('files/full_example_2', '%d %b, %Y'),
 ])
-def test_process(sample_name: str) -> None:
+def test_process(sample_name: str, date_format: str) -> None:
     errors = []
 
     def append_error(error: str) -> None:
@@ -19,7 +19,7 @@ def test_process(sample_name: str) -> None:
 
     prefix = os.path.join(os.path.dirname(__file__), sample_name)
     config = DatefilterConfig(
-        date_format='%m/%d/%Y',
+        date_format=date_format,
         include_missing=False
     )
 
@@ -29,6 +29,7 @@ def test_process(sample_name: str) -> None:
             config,
             append_error)
 
+    print(errors)
     assert filecmp.cmp(prefix + '_test_output.csv',
                        prefix + '_expected_output.csv')
 
