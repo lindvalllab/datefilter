@@ -2,9 +2,10 @@ import multiprocessing
 import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-from typing import Callable, Optional
+from typing import Callable
 
 from config import DatefilterConfig
+from .settings_window import SettingsWindow
 
 
 class UserInterface:
@@ -27,12 +28,11 @@ class UserInterface:
 
         self.root = tk.Tk()
         self.root.title("Date Filter")
+        settings_window = SettingsWindow(self.config, self.write_config, self.root)
 
         # Important variables
         self.data_file_var = tk.StringVar(value='')
         self.filter_file_var = tk.StringVar(value='')
-        self.include_missing_var = tk.BooleanVar(value=self.config.include_missing)
-        self.date_format_var = tk.StringVar(value=self.config.date_format)
 
         # Set up interface
         content = ttk.Frame(self.root)
@@ -61,7 +61,7 @@ class UserInterface:
         self.settings_button = ttk.Button(
             content,
             text="Settings...",
-            command=self.create_settings_window)
+            command=settings_window.show)
         self.confirm_button = ttk.Button(
             content,
             text="Filter",
@@ -139,81 +139,6 @@ class UserInterface:
                     self.confirm_button['state'] = tk.NORMAL
 
                 create_loading_window(self.root, thread, on_finish)
-
-    def create_settings_window(self) -> None:
-        settings_window = tk.Toplevel(self.root)
-        settings_window.title('Settings')
-        if sys.platform.startswith('linux'):
-            settings_window.attributes('-type', 'dialog')
-
-        self.update_settings_vars()
-
-        def destroy_window() -> None:
-            # The traces in the variables need to be reset each time the window opens
-            for trace in self.date_format_var.trace_info():
-                for trace_type in trace[0]:
-                    self.date_format_var.trace_remove(trace_type, trace[1])
-            for trace in self.include_missing_var.trace_info():
-                for trace_type in trace[0]:
-                    self.include_missing_var.trace_remove(trace_type, trace[1])
-            settings_window.destroy()
-
-        include_missing_check = ttk.Checkbutton(
-            settings_window,
-            text="Include entries missing from filter file",
-            variable=self.include_missing_var)
-        date_format_label = ttk.Label(settings_window, text='Date format:')
-        date_format_text = ttk.Entry(
-            settings_window,
-            textvariable=self.date_format_var,
-        )
-        set_default_button = ttk.Button(settings_window,
-                                        text='Restore defaults',
-                                        command=self.reset_settings)
-        cancel_button = ttk.Button(settings_window,
-                                   text='Close',
-                                   command=destroy_window)
-        apply_button = ttk.Button(settings_window,
-                                  text='Apply',
-                                  command=self.apply_settings,
-                                  state=tk.DISABLED)
-
-        def check_settings_change(x: str, y: str, z: str) -> None:
-            if self.config.date_format != self.date_format_var.get() or\
-                    self.config.include_missing != self.include_missing_var.get():
-                apply_button['state'] = tk.NORMAL
-            else:
-                apply_button['state'] = tk.DISABLED
-
-        self.date_format_var.trace_add('write', check_settings_change)
-        self.include_missing_var.trace_add('write', check_settings_change)
-
-        include_missing_check.grid(row=0, column=0, sticky='nw', columnspan=3, padx=10, pady=10)
-        date_format_label.grid(row=1, column=0, sticky='ew', padx=10, pady=10)
-        date_format_text.grid(row=1, column=1, sticky='w', padx=10, pady=10, columnspan=2)
-        set_default_button.grid(row=2, column=0, sticky='sw', padx=10, pady=10)
-        cancel_button.grid(row=2, column=1, sticky='se', padx=10, pady=10)
-        apply_button.grid(row=2, column=2, sticky='se', padx=10, pady=10)
-        settings_window.columnconfigure(0, weight=0)
-        settings_window.columnconfigure(1, weight=1)
-        settings_window.columnconfigure(2, weight=1)
-        settings_window.rowconfigure(0, weight=1)
-        settings_window.rowconfigure(1, weight=1)
-        settings_window.rowconfigure(2, weight=1)
-
-    def reset_settings(self) -> None:
-        self.update_settings_vars(DatefilterConfig())
-
-    def update_settings_vars(self, config: Optional[DatefilterConfig] = None) -> None:
-        if config is None:
-            config = self.config
-        self.include_missing_var.set(config.include_missing)
-        self.date_format_var.set(config.date_format)
-
-    def apply_settings(self) -> None:
-        self.config.include_missing = self.include_missing_var.get()
-        self.config.date_format = self.date_format_var.get()
-        self.write_config(self.config)
 
 
 def create_loading_window(root: tk.Tk,
