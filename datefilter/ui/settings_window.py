@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Callable, Optional
 
+import _version
 from config import DatefilterConfig
 
 
@@ -22,6 +23,10 @@ class SettingsWindow:
 
         if sys.platform.startswith('linux'):
             self.window.attributes('-type', 'dialog')
+
+        title_label = ttk.Label(self.window,
+                                text=f'Date Filter v{_version.__version__}',
+                                font=('default', 10, 'bold'))
 
         include_missing_check = ttk.Checkbutton(
             self.window,
@@ -44,18 +49,20 @@ class SettingsWindow:
                                        command=self.apply_settings,
                                        state=tk.DISABLED)
 
-        include_missing_check.grid(row=0, column=0, sticky='nw', columnspan=3, padx=10, pady=10)
-        date_format_label.grid(row=1, column=0, sticky='ew', padx=10, pady=10)
-        date_format_text.grid(row=1, column=1, sticky='w', padx=10, pady=10, columnspan=2)
-        set_default_button.grid(row=2, column=0, sticky='sw', padx=10, pady=10)
-        cancel_button.grid(row=2, column=1, sticky='se', padx=10, pady=10)
-        self.apply_button.grid(row=2, column=2, sticky='se', padx=10, pady=10)
+        title_label.grid(row=0, column=0, sticky='n', columnspan=3, padx=10, pady=10)
+        include_missing_check.grid(row=1, column=0, sticky='nw', columnspan=3, padx=10, pady=10)
+        date_format_label.grid(row=2, column=0, sticky='ew', padx=10, pady=10)
+        date_format_text.grid(row=2, column=1, sticky='w', padx=10, pady=10, columnspan=2)
+        set_default_button.grid(row=3, column=0, sticky='sw', padx=10, pady=10)
+        cancel_button.grid(row=3, column=1, sticky='se', padx=10, pady=10)
+        self.apply_button.grid(row=3, column=2, sticky='se', padx=10, pady=10)
         self.window.columnconfigure(0, weight=0)
         self.window.columnconfigure(1, weight=1)
         self.window.columnconfigure(2, weight=1)
-        self.window.rowconfigure(0, weight=1)
+        self.window.rowconfigure(0, weight=0)
         self.window.rowconfigure(1, weight=1)
         self.window.rowconfigure(2, weight=1)
+        self.window.rowconfigure(3, weight=1)
 
         self.date_format_var.trace_add('write', self.check_settings_change)
         self.include_missing_var.trace_add('write', self.check_settings_change)
