@@ -6,17 +6,18 @@ The purpose of this application is to filter CSV files containing medical record
 
 The application expects a .csv file containing the information from an RPDR-formatted .txt file
 (it needs to be converted from pipe-delimited to comma-delimited format first. Most importantly,
-there needs to be a Report\_Date\_Time column with the date formatted as month/day/year.
+there needs to be a Report\_Date\_Time column which starts with a date. The formatting of the date
+can be specified in the settings.
 
 In order to filter the data, you also need a separate .csv file containing information about each
 patient. The header will look like
 ```
 EMPI,Report_Date_Time,days_before,days_after
 ```
-For each EMPI, you specify the anchor date (again as month/day/year) as well as how many days
+For each EMPI, you specify the anchor date (in the same format) as well as how many days
 before and after the date you are interested in collecting data from. By default, if a patient is
-not included in the filter file, their records will not be included in the output. To change this
-behavior, check the check box.
+not included in the filter file, their records will not be included in the output. This behavior
+can be adjusted in the settings.
 
 If you want to specify patient information using other information than the EMPI (e.g. the MRN),
 that works too. Simply change `EMPI` above to `MRN` (or whatever column name you choose).
