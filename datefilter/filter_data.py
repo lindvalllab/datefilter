@@ -36,6 +36,10 @@ def filter_data(input_file: TextIO,
                 parsed_filter: ParsedFilter,
                 include_missing: bool,
                 append_error: Callable[[str], None]) -> None:
+    # Allow very large field sizes in the csv.
+    # https://stackoverflow.com/questions/15063936
+    csv.field_size_limit(2147483647)
+
     reader = csv.DictReader(input_file)
 
     # For the type-checker. The field names shouldn't be None.
