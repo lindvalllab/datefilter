@@ -3,7 +3,6 @@
 The purpose of this application is to filter CSV files containing medical records by the proximity of each record to a particular date.
 
 ## Usage
-
 The application expects a .csv file containing the information from an RPDR-formatted .txt file
 (it needs to be converted from pipe-delimited to comma-delimited format first. Most importantly,
 there needs to be a Report\_Date\_Time column which starts with a date. The formatting of the date
@@ -44,3 +43,7 @@ Activate the virtual environment and install dependencies.
 source dfenv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 ```
+
+## Creating a release (for developers)
+
+In order to create a release, please first update the version number in `datefilter/_version.py` in accordance with [semantic versioning](https://semver.org/). When that is merged to main, create a tag with the appropriate version number and push it to the remote. Finally, create a release on GitHub using that version tag. An action should run on GitHub creating executable builds of the program.
