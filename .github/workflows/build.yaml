@@ -22,19 +22,19 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
       - name: Build (linux)
-        run: pyinstaller -wF datefilter/datefilter.py -n datefilter-linux
+        run: pyinstaller -wF datefilter/datefilter.py -n datefilter-linux-${{github.event.release.tag_name}}
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Build (macos)
         run: |
-          pyinstaller -wF datefilter/datefilter.py
+          pyinstaller -wF datefilter/datefilter.py -n datefilter-${{github.event.release.tag_name}}
           pushd dist
-          rm datefilter  # keep only .app file for uploading
-          zip -r datefilter.app.zip datefilter.app
-          rm -r datefilter.app
+          rm datefilter-${{github.event.release.tag_name}}  # keep only .app file for uploading
+          zip -r datefilter-${{github.event.release.tag_name}}.app.zip datefilter-${{github.event.release.tag_name}}.app
+          rm -r datefilter-${{github.event.release.tag_name}}.app
           popd
         if: ${{ matrix.os == 'macos-latest' }}
       - name: Build (windows)
-        run: pyinstaller -wF datefilter/datefilter.py
+        run: pyinstaller -wF datefilter/datefilter.py -n datefilter-${{github.event.release.tag_name}}
         if: ${{ matrix.os == 'windows-latest' }}
       - name: Upload build to release
         uses: softprops/action-gh-release@v1
