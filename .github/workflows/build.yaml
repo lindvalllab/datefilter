@@ -32,7 +32,7 @@ jobs:
           zip -r datefilter-${{github.event.release.tag_name}}.app.zip datefilter-${{github.event.release.tag_name}}.app
           rm -r datefilter-${{github.event.release.tag_name}}.app
           popd
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-11' }}
       - name: Build (windows)
         run: pyinstaller -wF datefilter/datefilter.py -n datefilter-${{github.event.release.tag_name}}
         if: ${{ matrix.os == 'windows-latest' }}
