@@ -1,7 +1,8 @@
+from collections import defaultdict
 import csv
 import datetime
 from dataclasses import dataclass
-from typing import Callable, Dict, TextIO
+from typing import Callable, Dict, List, TextIO
 
 from date_info import DateInfo
 
@@ -17,14 +18,14 @@ class ParseFilterException(Exception):
 class ParsedFilter:
     id_col: str
     date_col: str
-    filter_dict: Dict[str, DateInfo]
+    filter_dict: Dict[str, List[DateInfo]]
 
 
 def parse_filter(input_file: TextIO,
                  date_format: str,
                  append_error: Callable[[str], None]) -> ParsedFilter:
     reader = csv.DictReader(input_file)
-    filter_dict = {}
+    filter_dict = defaultdict(list)
 
     if reader.fieldnames is None:
         append_error('There appears to be a problem with the filter file. '
@@ -61,11 +62,11 @@ def parse_filter(input_file: TextIO,
             append_error(f'The row days_after={row["days_after"]} is incorrectly formatted.')
             raise ParseFilterException
 
-        filter_dict[row[id_col]] = DateInfo(
+        filter_dict[row[id_col]].append(DateInfo(
             anchor_date=anchor_date,
             days_before=days_before,
             days_after=days_after
-        )
+        ))
     return ParsedFilter(
         id_col=id_col,
         date_col=date_col,

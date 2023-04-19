@@ -38,14 +38,14 @@ def test_parse_good_filter() -> None:
         assert len(errors) == 0
         assert len(filter_dict) == 3
 
-        assert filter_dict['12'].anchor_date == datetime.date(1970, 1, 1)
-        assert filter_dict['12'].days_before == datetime.timedelta(10)
-        assert filter_dict['12'].days_after == datetime.timedelta(10)
+        assert filter_dict['12'][0].anchor_date == datetime.date(1970, 1, 1)
+        assert filter_dict['12'][0].days_before == datetime.timedelta(10)
+        assert filter_dict['12'][0].days_after == datetime.timedelta(10)
 
-        assert filter_dict['23'].anchor_date == datetime.date(1980, 1, 1)
-        assert filter_dict['23'].days_before == datetime.timedelta(5)
-        assert filter_dict['23'].days_after == datetime.timedelta(5)
+        assert filter_dict['23'][0].anchor_date == datetime.date(1980, 1, 1)
+        assert filter_dict['23'][0].days_before == datetime.timedelta(5)
+        assert filter_dict['23'][0].days_after == datetime.timedelta(5)
 
-        assert filter_dict['34'].anchor_date == datetime.date(1990, 5, 20)
-        assert filter_dict['34'].days_before == datetime.timedelta(3)
-        assert filter_dict['34'].days_after == datetime.timedelta(10)
+        assert filter_dict['34'][0].anchor_date == datetime.date(1990, 5, 20)
+        assert filter_dict['34'][0].days_before == datetime.timedelta(3)
+        assert filter_dict['34'][0].days_after == datetime.timedelta(10)

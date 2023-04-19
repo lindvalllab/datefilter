@@ -13,8 +13,10 @@ def include_row(row: Dict[str, str],
     if row[parsed_filter.id_col] not in parsed_filter.filter_dict:
         return include_missing
     patient_date_info = parsed_filter.filter_dict[row[parsed_filter.id_col]]
-    first_date = patient_date_info.anchor_date - patient_date_info.days_before
-    last_date = patient_date_info.anchor_date + patient_date_info.days_after
+    first_last_dates = [
+        (info.anchor_date - info.days_before, info.anchor_date + info.days_after)
+         for info in patient_date_info
+    ]
     date_col = row[parsed_filter.date_col]  # .split()[0]
     try:
         row_date = datetime.datetime.strptime(date_col, date_format).date()
@@ -27,7 +29,9 @@ def include_row(row: Dict[str, str],
             row_date = datetime.datetime.strptime(date_text, date_format).date()
         else:
             raise
-    return first_date <= row_date <= last_date
+    return any(
+        first_date <= row_date <= last_date for (first_date, last_date) in first_last_dates
+    )
 
 
 def filter_data(input_file: TextIO,
