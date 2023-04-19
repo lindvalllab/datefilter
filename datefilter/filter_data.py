@@ -15,7 +15,7 @@ def include_row(row: Dict[str, str],
     patient_date_info = parsed_filter.filter_dict[row[parsed_filter.id_col]]
     first_last_dates = [
         (info.anchor_date - info.days_before, info.anchor_date + info.days_after)
-         for info in patient_date_info
+        for info in patient_date_info
     ]
     date_col = row[parsed_filter.date_col]  # .split()[0]
     try:
