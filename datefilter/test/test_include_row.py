@@ -12,7 +12,7 @@ def test_include_row_true() -> None:
         'Report_Text': 'Lorem Ipsum'
     }
     date_info = {
-        '12': DateInfo(datetime.date(2010, 5, 3), datetime.timedelta(2), datetime.timedelta(0))
+        '12': [DateInfo(datetime.date(2010, 5, 3), datetime.timedelta(2), datetime.timedelta(0))]
     }
     parsed_filter = ParsedFilter(
         id_col='EMPI',
@@ -29,7 +29,7 @@ def test_include_row_false() -> None:
         'Report_Text': 'Lorem Ipsum'
     }
     date_info = {
-        '12': DateInfo(datetime.date(2010, 5, 3), datetime.timedelta(2), datetime.timedelta(0))
+        '12': [DateInfo(datetime.date(2010, 5, 3), datetime.timedelta(2), datetime.timedelta(0))]
     }
     parsed_filter = ParsedFilter(
         id_col='EMPI',
@@ -56,7 +56,7 @@ def test_include_row_negative_before() -> None:
         'Report_Text': 'Lorem Ipsum'
     }
     date_info = {
-        '12': DateInfo(datetime.date(2010, 4, 28), datetime.timedelta(-3), datetime.timedelta(4))
+        '12': [DateInfo(datetime.date(2010, 4, 28), datetime.timedelta(-3), datetime.timedelta(4))]
     }
     parsed_filter = ParsedFilter(
         id_col='MRN',
@@ -86,7 +86,7 @@ def test_include_row_negative_after() -> None:
         'Report_Text': 'Lorem Ipsum'
     }
     date_info = {
-        '12': DateInfo(datetime.date(2010, 5, 2), datetime.timedelta(1), datetime.timedelta(-1))
+        '12': [DateInfo(datetime.date(2010, 5, 2), datetime.timedelta(1), datetime.timedelta(-1))]
     }
     parsed_filter = ParsedFilter(
         id_col='EMPI',
