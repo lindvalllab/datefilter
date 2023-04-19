@@ -10,6 +10,7 @@ from config import DatefilterConfig
 @pytest.mark.parametrize('sample_name,date_format', [
     ('files/full_example_1', '%m/%d/%Y'),
     ('files/full_example_2', '%d %b, %Y'),
+    ('files/multiple_ranges_1', '%m/%d/%Y'),
 ])
 def test_process(sample_name: str, date_format: str) -> None:
     errors = []
